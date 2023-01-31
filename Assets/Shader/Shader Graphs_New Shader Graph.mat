@@ -54,9 +54,9 @@ Material:
     m_Floats:
     - _QueueControl: 0
     - _QueueOffset: 0
-    - _disto_scale: 34.21
-    - _distor: 0.879
-    - _distor_rotate: -0.34
-    - _twirl_strengh: 9.3
+    - _disto_scale: 6.3
+    - _distor: 0.962
+    - _distor_rotate: -1.39
+    - _twirl_strengh: -43
     m_Colors: []
   m_BuildTextureStacks: []

@@ -37,11 +37,11 @@ Material:
     m_Floats:
     - _QueueControl: 0
     - _QueueOffset: 0
-    - _celldensity: 1385.1
-    - _cellspeed: 18.2
+    - _celldensity: 1379.6
+    - _cellspeed: 42.2
     - _solarflare: 39.4
     m_Colors:
-    - _base_color: {r: 1.380816, g: 0.5514631, b: 0, a: 0}
+    - _base_color: {r: 1.391319, g: 0.7214985, b: 0.26907584, a: 0}
     - _cellcolor: {r: 5.521569, g: 3.827451, b: 0.9098039, a: 0}
   m_BuildTextureStacks: []
 --- !u!114 &857466365874892154
