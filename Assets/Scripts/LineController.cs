@@ -17,6 +17,16 @@ public class LineController : MonoBehaviour
     private float timer = 0.0f;
     Vector3[] initialLine;
     // Start is called before the first frame update
+    void OnEnable()
+    {
+        MultipleTouch.OnPlanetCreated += UpdatePlanet;
+    }
+
+
+    void OnDisable()
+    {
+        MultipleTouch.OnPlanetCreated -= UpdatePlanet;
+    }
 
     public void SetLineParameter(float _treshold,float _lenght,int _pointNbr,bool _horizontal)
     {
@@ -38,10 +48,8 @@ public class LineController : MonoBehaviour
         followObj = GameObject.FindGameObjectWithTag("Planet");
         lineRenderer = GetComponent<LineRenderer>();
         CreateLine();
-
     }
 
-    // Update is called once per frame
     void FixedUpdate()
     {
         timer += Time.deltaTime;
@@ -79,9 +87,17 @@ public class LineController : MonoBehaviour
     }
     void UpdateLine()
     {
-        for (int i = 0; i < lineRenderer.positionCount; i++)
+        if (followObj != null)
         {
-            lineRenderer.SetPosition(i, Vector3.Lerp(initialLine[i],followObj.transform.position, Mathf.Clamp(threshold - Vector3.Distance(initialLine[i], followObj.transform.position),0,1)));
+            for (int i = 0; i < lineRenderer.positionCount; i++)
+            {
+                lineRenderer.SetPosition(i, Vector3.Lerp(initialLine[i], followObj.transform.position, Mathf.Clamp(threshold - Vector3.Distance(initialLine[i], followObj.transform.position), 0, 1)));
+            }
         }
+    }
+
+    void UpdatePlanet()
+    {
+        followObj = GameObject.FindGameObjectWithTag("Planet");
     }
 }
