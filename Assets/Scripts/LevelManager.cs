@@ -4,11 +4,14 @@ using UnityEngine;
 
 public class LevelManager : MonoBehaviour
 {
-    List<GameObject> listOfLevels = new List<GameObject>();
+    public List<GameObject> listOfLevels = new List<GameObject>();
 
     public static LevelManager instance;
 
     GameObject currentLevel;
+
+    public delegate void LevelChanged();
+    public static event LevelChanged OnLevelChanged;
     private void Awake()
     {
         if (instance != null && instance != this)
@@ -27,7 +30,9 @@ public class LevelManager : MonoBehaviour
 
     public void ChangeLevel()
     {
-        Destroy(currentLevel);
-        currentLevel = Instantiate(listOfLevels[Random.Range(0, listOfLevels.Count)]);
+        currentLevel.SetActive(false);
+        OnLevelChanged();
+        Destroy(currentLevel); 
+         currentLevel = Instantiate(listOfLevels[Random.Range(0, listOfLevels.Count)]);
     }
 }

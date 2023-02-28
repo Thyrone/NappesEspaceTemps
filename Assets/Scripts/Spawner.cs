@@ -30,7 +30,7 @@ public class Spawner : MonoBehaviour
             timestep = initialTimeStep;
             GameObject go =Instantiate(prebab);
             go.transform.position = transform.position;
-            nBody.UpdateBodies(FindObjectsOfType<CelestialBody>());
+            nBody.AddBodie(go.GetComponent<CelestialBody>());
             Debug.Log("Time has run out!");
             
         }

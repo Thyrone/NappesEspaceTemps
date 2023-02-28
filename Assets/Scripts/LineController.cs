@@ -11,21 +11,28 @@ public class LineController : MonoBehaviour
 
     LineRenderer lineRenderer;
     GameObject followObj;
+    List<GameObject> followObjs=new List<GameObject>();
+    //GameObject[] followObjs;
     public bool horizontal;
 
     private float waitTime = 0.05f;
     private float timer = 0.0f;
     Vector3[] initialLine;
-    // Start is called before the first frame update
+    List<Vector3[]> modifLine = new List<Vector3[]>();
+
     void OnEnable()
     {
-        MultipleTouch.OnPlanetCreated += UpdatePlanet;
+        MultipleTouch.OnPlanetCreated += AddPlanet;
+        MultipleTouch.OnPlanetDestroy += DeletePlanet;
+        //LevelManager.OnLevelChanged += UpdatePlanet;
     }
 
 
     void OnDisable()
     {
-        MultipleTouch.OnPlanetCreated -= UpdatePlanet;
+        MultipleTouch.OnPlanetCreated -= AddPlanet;
+        MultipleTouch.OnPlanetDestroy -= DeletePlanet;
+        // LevelManager.OnLevelChanged -= AddPlanet;
     }
 
     public void SetLineParameter(float _treshold,float _lenght,int _pointNbr,bool _horizontal)
@@ -42,10 +49,19 @@ public class LineController : MonoBehaviour
         lenght = _lenght;
         pointNbr = _pointNbr;
     }
+
+    private void Awake()
+    {
+        GameObject[] bodiesTab;
+        bodiesTab = GameObject.FindGameObjectsWithTag("Planet");
+        foreach (GameObject celestial in bodiesTab)
+        {
+            followObjs.Add(celestial);
+        }
+    }
     void Start()
     {
-
-        followObj = GameObject.FindGameObjectWithTag("Planet");
+     //   UpdatePlanet();
         lineRenderer = GetComponent<LineRenderer>();
         CreateLine();
     }
@@ -78,8 +94,6 @@ public class LineController : MonoBehaviour
                 lineRenderer.SetPosition(i, new Vector3(transform.position.x, transform.position.y, i * (lenght/ pointNbr)));
 
         }
-
-
         initialLine = new Vector3[lineRenderer.positionCount];
         lineRenderer.GetPositions(initialLine);
         Debug.Log(initialLine.Length);
@@ -87,6 +101,8 @@ public class LineController : MonoBehaviour
     }
     void UpdateLine()
     {
+        /*
+        //Single
         if (followObj != null)
         {
             for (int i = 0; i < lineRenderer.positionCount; i++)
@@ -94,10 +110,75 @@ public class LineController : MonoBehaviour
                 lineRenderer.SetPosition(i, Vector3.Lerp(initialLine[i], followObj.transform.position, Mathf.Clamp(threshold - Vector3.Distance(initialLine[i], followObj.transform.position), 0, 1)));
             }
         }
+        */
+
+        //Multiples
+        Debug.Log("followObjs.Length="+ followObjs.Count);
+        if (followObjs.Count > 0)
+        {
+            Debug.Log("notNull");
+            modifLine.Clear();
+            foreach (GameObject obj in followObjs)
+            {
+                if (obj != null)
+                {
+                    //float localthreshold = 0.6f;
+                    float localthreshold = obj.GetComponent<Rigidbody>().mass / 1000;
+                    Vector3[] tabToAdd = new Vector3[lineRenderer.positionCount];
+                    for (int i = 0; i < lineRenderer.positionCount; i++)
+                    {
+                        tabToAdd[i] = Vector3.Lerp(initialLine[i], obj.transform.position,
+                            Mathf.Clamp(localthreshold - Vector3.Distance(initialLine[i], obj.transform.position)
+                            , 0, 1));
+                        //lineRenderer.SetPosition(i,Vector3.Lerp(initialLine[i], obj.transform.position, Mathf.Clamp(localthreshold - Vector3.Distance(initialLine[i], obj.transform.position), 0, 1)));
+                    }
+                    modifLine.Add(tabToAdd);
+                }
+
+            }
+            for (int i = 0; i < lineRenderer.positionCount; i++)
+            {
+                lineRenderer.SetPosition(i, VectorAverage(i, modifLine));
+            }
+        }else
+        {
+            for (int i = 0; i < lineRenderer.positionCount; i++)
+            {
+                lineRenderer.SetPosition(i, initialLine[i]);
+            }
+        }
+        
+
+        
     }
 
-    void UpdatePlanet()
+
+    Vector3 VectorAverage(int index,List<Vector3[]> listOfVector)
     {
-        followObj = GameObject.FindGameObjectWithTag("Planet");
+        Vector3 average = Vector3.zero;
+        int divider = listOfVector.Count;
+        foreach (Vector3[] calculLine in listOfVector)
+        {
+
+            average += calculLine[index];
+        }
+
+        return new Vector3(average.x / listOfVector.Count,
+            average.y / listOfVector.Count,
+            average.z / listOfVector.Count);
+        
+    }
+    void AddPlanet(GameObject Planet)
+    {
+        //Singles
+       // followObj = GameObject.FindGameObjectWithTag("Planet");
+
+        //Multiples
+        followObjs.Add(Planet);
+    }
+
+    void DeletePlanet(GameObject Planet)
+    {
+        followObjs.Remove(Planet);
     }
 }

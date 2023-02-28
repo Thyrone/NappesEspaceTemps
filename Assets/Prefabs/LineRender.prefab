@@ -45,10 +45,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: bc58ff55da7455f41b5cd0b2f6a1992e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  step: 0.5
-  nbGrid: 4
+  threshold: 0.1
+  lenght: 0.1
+  pointNbr: 50
   horizontal: 0
-  Volume: 0
 --- !u!120 &939773584645408125
 LineRenderer:
   m_ObjectHideFlags: 0
@@ -93,7 +93,7 @@ LineRenderer:
   m_Positions: []
   m_Parameters:
     serializedVersion: 3
-    widthMultiplier: 0.1
+    widthMultiplier: 0.01
     widthCurve:
       serializedVersion: 2
       m_Curve:

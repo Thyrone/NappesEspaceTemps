@@ -10,8 +10,12 @@ public class MultipleTouch : MonoBehaviour
 
     public List<touchLocation> touches = new List<touchLocation>();
 
-    public delegate void PlanetCreated();
+    public delegate void PlanetCreated(GameObject Planet);
     public static event PlanetCreated OnPlanetCreated;
+
+    public delegate void PlanetDestroy(GameObject Planet);
+    public static event PlanetDestroy OnPlanetDestroy;
+
     void Start()
     {
         cam = GetComponent<Camera>();
@@ -28,14 +32,16 @@ public class MultipleTouch : MonoBehaviour
             if(t.phase==TouchPhase.Began)
             {
                 touches.Add(new touchLocation(t.fingerId, CreatePrefab(t)));
-                OnPlanetCreated();
+                
             }
             else if (t.phase == TouchPhase.Ended)
             {
                 touchLocation thisTouch = touches.Find(touchLocation => touchLocation.touchId == t.fingerId);
+                nBody.DeleteBodie(thisTouch.touchPrefab.GetComponent<CelestialBody>());
+                OnPlanetDestroy(thisTouch.touchPrefab);
                 Destroy(thisTouch.touchPrefab);
-                nBody.UpdateBodies(FindObjectsOfType<CelestialBody>());
                 touches.RemoveAt(touches.IndexOf(thisTouch));
+                
             }
             else if (t.phase == TouchPhase.Moved)
             {
@@ -65,7 +71,8 @@ public class MultipleTouch : MonoBehaviour
             go.name="Touch"+t.fingerId;
             Debug.Log(getTouchPosition(t.position));
             go.transform.position = getTouchPosition(t.position);
-            nBody.UpdateBodies(FindObjectsOfType<CelestialBody>());
+            nBody.AddBodie(go.GetComponent<CelestialBody>());
+            OnPlanetCreated(go);
             return go;
         }
     }
